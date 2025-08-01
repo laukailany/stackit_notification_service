@@ -40,5 +40,29 @@ class NotificationServiceTest(unittest.TestCase):
         self.assertIn("Missing required field: 'Description'", response.get_json()['error'])
         self.assertEqual(len(processed_warnings), 0)
 
+    def test_empty_json_payload(self):
+        response = self.app.post('/notify', json={})
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual("Something is wrong with the JSON payload", response.get_json()['error'])
+        self.assertEqual(len(processed_warnings), 0)
+
+    def test_unknown_type_ignored(self):
+        response = self.app.post('/notify', json={
+            "Type": "Critical",
+            "Name": "System Crash",
+            "Description": "The system crashed unexpectedly"
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Notification of type 'Critical' received but not forwarded", response.get_json()['message'])
+        self.assertEqual(len(processed_warnings), 0)
+
+    def test_health_check(self):
+        response = self.app.get('/health')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get_json()['status'], "healthy")
+
 if __name__ == '__main__':
     unittest.main()

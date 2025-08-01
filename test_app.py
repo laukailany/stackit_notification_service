@@ -29,5 +29,16 @@ class NotificationServiceTest(unittest.TestCase):
         self.assertIn("Info notification received but not forwarded", response.get_json()['message'])
         self.assertEqual(len(processed_warnings), 0)
 
+    def test_missing_required_field(self):
+        response = self.app.post('/notify', json={
+            "Type": "Warning",
+            "Name": "Test Name"
+            # "Description" keine
+        })
+
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("Missing required field: 'Description'", response.get_json()['error'])
+        self.assertEqual(len(processed_warnings), 0)
+
 if __name__ == '__main__':
     unittest.main()

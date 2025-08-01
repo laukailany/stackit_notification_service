@@ -18,5 +18,16 @@ class NotificationServiceTest(unittest.TestCase):
         self.assertEqual(len(processed_warnings), 1)
         self.assertEqual(processed_warnings[0]["Name"], "Test Warning")
 
+    def test_info_notification_not_forwarded(self):
+        response = self.app.post('/notify', json={
+            "Type": "Info",
+            "Name": "Test Info",
+            "Description": "TEST INFO"
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Info notification received but not forwarded", response.get_json()['message'])
+        self.assertEqual(len(processed_warnings), 0)
+
 if __name__ == '__main__':
     unittest.main()

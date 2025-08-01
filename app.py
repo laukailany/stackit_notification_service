@@ -56,5 +56,21 @@ def handle_notification():
             print(f"ERROR sending to messenger: {e}")
             return jsonify({"error": f"Failed to forward WARNING: {e}"}), 500
 
+    elif notification_type == "Info":
+        print(f"IGNORING INFO")
+        print(f"Type: {data['Type']}")
+        print(f"Name: {data['Name']}")
+        print(f"Description: {data['Description']}")
+        print(f"---------------------" + "\n")
+        return jsonify({"message": "Info notification received but not forwarded"}), 200
+
+    else:
+        print(f"IGNORING UNKNOWN TYPE: {notification_type}")
+        print(f"Name: {data['Name']}")
+        print(f"Description: {data['Description']}")
+        print(f"-----------------------------------" + "\n")
+
+        return jsonify({"message": f"Notification of type '{notification_type}' received but not forwarded"}), 200
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
